@@ -1,0 +1,45 @@
+version: "3"
+services:
+  test:
+    build: .
+    command: rspec
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - dynamo
+      - fakes3
+    links:
+      - fakes3
+      - fakes3:some-test-bucket.fakes3
+    environment:
+      - DYNAMO_ENDPOINT=http://dynamo:5000
+      - FAKES3_ENDPOINT=http://fakes3:4000
+      - AWS_ACCESS_KEY_ID=potato
+      - AWS_SECRET_ACCESS_KEY=chorizo
+      - AWS_REGION=us-west-2
+      - ANALYSIS_ID=12345
+      - CUSTOMER_ID=fake_customer_id
+      - TOE_ID=fake_toe_id
+      - USER_EMAIL=yeah@yeah.com
+    networks:
+      - fake-aws
+
+  dynamo:
+    image: fingershock/dynamodb-local
+    command: -inMemory -port 5000
+    ports:
+      - "5000:5000"
+    networks:
+      - fake-aws
+
+  fakes3:
+    image: jlynn/moto_server
+    command: s3 -p4000
+    ports:
+      - "4000:4000"
+    networks:
+      - fake-aws
+
+networks:
+  fake-aws:
+    driver: bridge

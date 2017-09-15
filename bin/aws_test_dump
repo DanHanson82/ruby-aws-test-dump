@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'aws_test_dump'
+
+
+action = ARGV[0]
+table_name = ARGV[1]
+dump_file = nil
+
+ARGV.options do |opts|
+  opts.on("-o", "--out=val", String)   { |val| dump_file = val }
+  opts.parse!
+end
+
+
+if action == 'schema_dump'
+  processor = AwsTestDump::DynamoSchemaDump.new dump_file
+elsif action == 'data_dump'
+  processor = AwsTestDump::DynamoDataDump.new table_name
+else
+  raise NotValidOptionError
+end
+processor.run
