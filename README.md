@@ -1,5 +1,23 @@
 # AwsTestDump
 
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'aws_test_dump'
+```
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install aws_test_dump
+
+## Usage
+
 ### generating test data
 
 #### dynamo data
@@ -54,26 +72,6 @@ s3_dump.run
 ```
 
 make sure any new buckets are added to the links mapping in the compose file so they are hitting the fakes3 service.
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'aws_test_dump'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install aws_test_dump
-
-## Usage
-
-TODO: Write usage instructions here
 
 ## Development
 
