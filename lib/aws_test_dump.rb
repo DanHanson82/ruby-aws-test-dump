@@ -1,4 +1,6 @@
-require "aws_test_dump/version"
+require 'aws-sdk-core'
+
+require 'aws_test_dump/version'
 
 
 class NotValidOptionError < StandardError
@@ -24,7 +26,11 @@ module AwsTestDump
   require 'yaml'
 
   DATA_DUMP_DEFINITION = ENV['DATA_DUMP_DEFINITION'] || File.join(Dir.pwd, 'spec', 'test_data_dump_definition.rb')
-  require_relative DATA_DUMP_DEFINITION
+  begin
+    require_relative DATA_DUMP_DEFINITION
+  rescue LoadError
+    DATA_DUMP_DEFINITIONS = []
+  end
 
   Aws.config[:region] = ENV['AWS_REGION']
 
@@ -244,9 +250,9 @@ module AwsTestDump
     def run
       data.each_with_index do |item, index|
         if index == 0
-          item.merge!(data_dump_definition.fetch(:replace_first, Hash.new))
+          item.merge!(data_dump_definition.fetch(:replace_first, {}))
         end
-        item.merge!(data_dump_definition[:replace_these])
+        item.merge!(data_dump_definition.fetch(:replace_these, {}))
         @dynamo_client.put_item({:table_name => table_name, item: item})
       end
     end
@@ -259,7 +265,7 @@ module AwsTestDump
 
     def data_dump_definition
       if @data_dump_definition.nil?
-        @data_dump_definition = DATA_DUMP_DEFINITIONS.find { |x| x[:table_name] == table_name}
+        @data_dump_definition = DATA_DUMP_DEFINITIONS.find { |x| x[:table_name] == table_name} || {}
       end
       @data_dump_definition
     end

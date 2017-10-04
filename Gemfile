@@ -1,4 +1,6 @@
 source 'https://rubygems.org'
-
-# Specify your gem's dependencies in aws_test_dump.gemspec
-gemspec
+gem 'aws-sdk', '~>2'
+gem 'rake'
+gem 'rspec'
+gem 'simplecov'
+gem 'simplecov-console'
