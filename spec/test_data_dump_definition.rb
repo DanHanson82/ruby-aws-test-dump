@@ -5,7 +5,7 @@ DATA_DUMP_DEFINITIONS = [
     table_name: 'some_table_name',
     key_conditions: {
       'user_name' => {
-        :attribute_value_list => 'chorizo',
+        :attribute_value_list => ['chorizo'],
         :comparison_operator => 'EQ'
       }
     },
@@ -17,7 +17,11 @@ DATA_DUMP_DEFINITIONS = [
     table_name: 'some_other_table',
     key_conditions: {
       'another_id' => {
-        :attribute_value_list => 'fake',
+        :attribute_value_list => ['fake'],
+        :comparison_operator => 'EQ'
+      },
+      'user_email' => {
+        :attribute_value_list => ['bob@bob.com'],
         :comparison_operator => 'EQ'
       }
     },

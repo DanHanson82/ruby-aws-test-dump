@@ -1,5 +1,3 @@
-require 'aws-sdk-core'
-
 require 'aws_test_dump/version'
 
 
@@ -69,7 +67,7 @@ module AwsTestDump
     attr_accessor :dump_file
 
     def initialize(dump_file=nil)
-      dynamo_args = Hash.new
+      dynamo_args = {}
       dynamo_args[:endpoint] = ENV['DYNAMO_ENDPOINT'] if ENV['DYNAMO_ENDPOINT']
       @dynamo_client = Aws::DynamoDB::Client.new(**dynamo_args)
       @dump_file = dump_file
@@ -170,13 +168,15 @@ module AwsTestDump
   class DynamoTableDump < BaseDynamoProcessor
     attr_accessor :table_name, :data_dump_definition
 
-    def initialize(data_dump_definition)
-      super
-      @table_name = data_dump_definition[:table_name]
-      @dump_file = File.join(
-        DEFAULT_DATA_DUMP_DIR, "#{data_dump_definition[:table_name]}.yml"
-      )
+    def initialize(data_dump_definition=nil, dump_dir=nil, table_name=nil)
+      super nil
       @data_dump_definition = data_dump_definition
+      @data_dump_definition ||= {}
+      @table_name = table_name
+      @table_name ||= @data_dump_definition[:table_name]
+      @dump_dir = dump_dir
+      @dump_dir ||= DEFAULT_DATA_DUMP_DIR
+      @dump_file = File.join(@dump_dir, "#{@table_name}.yml")
       @query_results = nil
     end
 
@@ -186,6 +186,9 @@ module AwsTestDump
 
     def dump_data
       data = {table_name: @table_name, data: query_results}
+      unless File.directory?(@dump_dir)
+        FileUtils.mkdir_p(@dump_dir)
+      end
       File.open(@dump_file, 'w') { |file| file.write data.to_yaml }
     end
 
@@ -198,7 +201,7 @@ module AwsTestDump
     end
 
     def _scan
-      @dynamo_client.scan({:table_name => @table_name})
+      @dynamo_client.scan({table_name: @table_name})
     end
 
     def query_results
@@ -214,8 +217,10 @@ module AwsTestDump
   class DynamoDataDump < BaseDynamoProcessor
     attr_accessor :table_name, :data_dump_definitions
 
-    def initialize(table_name=nil)
-      super
+    def initialize(table_name=nil, dump_dir=nil)
+      super nil
+      @dump_dir = dump_dir
+      @dump_dir ||= DEFAULT_DATA_DUMP_DIR
       @table_name = table_name
       @data_dump_definitions = nil
     end
@@ -223,7 +228,8 @@ module AwsTestDump
     def data_dump_definitions
       if @data_dump_definitions.nil?
         if !@table_name.nil?
-          @data_dump_definitions = [DATA_DUMP_DEFINITIONS.find { |x| x[:table_name] == table_name }]
+          data_dump_definition = DATA_DUMP_DEFINITIONS.find { |x| x[:table_name] == table_name }
+          @data_dump_definitions = !data_dump_definition.nil? ? [data_dump_definition] : []
         else
           @data_dump_definitions = DATA_DUMP_DEFINITIONS
         end
@@ -232,8 +238,13 @@ module AwsTestDump
     end
 
     def run
-      data_dump_definitions.each do |data_dump_definition|
-        dynamo_table_dump = DynamoTableDump.new data_dump_definition
+      if !data_dump_definitions.empty?
+        data_dump_definitions.each do |data_dump_definition|
+          dynamo_table_dump = DynamoTableDump.new data_dump_definition, @dump_dir
+          dynamo_table_dump.run
+        end
+      elsif !@table_name.nil?
+        dynamo_table_dump = DynamoTableDump.new nil, @dump_dir, @table_name
         dynamo_table_dump.run
       end
     end
@@ -283,15 +294,17 @@ module AwsTestDump
 
   class DynamoDataRestore < BaseDynamoProcessor
 
-    def initialize
+    def initialize(dump_dir=nil)
       super
+      @dump_dir = dump_dir
+      @dump_dir ||= DEFAULT_DATA_DUMP_DIR
       @data_dump_files = Array.new
     end
 
     def data_dump_files
       if @data_dump_files.empty?
-        Dir.entries(DEFAULT_DATA_DUMP_DIR).each do |f|
-          full_path = File.join(DEFAULT_DATA_DUMP_DIR, f)
+        Dir.entries(@dump_dir).each do |f|
+          full_path = File.join(@dump_dir, f)
           @data_dump_files << full_path if File.file?(full_path)
         end
       end
@@ -320,6 +333,10 @@ module AwsTestDump
     end
 
     def dump_schemata
+      dirname = File.dirname(@dump_file)
+      unless File.directory?(dirname)
+        FileUtils.mkdir_p(dirname)
+      end
       File.open(@dump_file, 'w') { |file| file.write schemata.to_yaml }
     end
 
