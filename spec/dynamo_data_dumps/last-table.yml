@@ -1,0 +1,18 @@
+---
+:table_name: last_table
+:data:
+- enabled: false
+  customer_id: 45ef5537-f3e6-4b69-8988-9d17f627acd8
+  last_id: 01af5e18-486b-4443-8678-1e8bc7d57849
+  some_value: !ruby/object:BigDecimal 18:0.5E1
+  some_other_key: timmy
+- enabled: true
+  customer_id: 45ef5537-f3e6-4b69-8988-9d17f627acd8
+  last_id: 029869f6-2864-45dc-84d8-c113e704b4e5
+  some_value: !ruby/object:BigDecimal 18:0.5E1
+  some_other_key: timmy
+- enabled: false
+  customer_id: 45ef5537-f3e6-4b69-8988-9d17f627acd8
+  last_id: 09b910a9-9012-4b33-b674-8857cdc9bdce
+  some_value: !ruby/object:BigDecimal 18:0.5E1
+  some_other_key: timmy

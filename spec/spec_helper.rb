@@ -1,5 +1,18 @@
 require "bundler/setup"
+require 'simplecov'
+require 'simplecov-console'
+
+#
+# SimpleCov must start before the application is required to measure coverage correctly
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+  SimpleCov::Formatter::HTMLFormatter,
+  SimpleCov::Formatter::Console,
+]
+SimpleCov.start do
+  add_filter "/spec/"
+end
 require "aws_test_dump"
+
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

@@ -1,0 +1,43 @@
+---
+- :attribute_definitions:
+  - :attribute_name: some_id
+    :attribute_type: S
+  - :attribute_name: user_name
+    :attribute_type: S
+  :table_name: some_table_name
+  :key_schema:
+  - :attribute_name: user_name
+    :key_type: HASH
+  - :attribute_name: some_id
+    :key_type: RANGE
+  :provisioned_throughput:
+    :read_capacity_units: 5
+    :write_capacity_units: 5
+- :attribute_definitions:
+  - :attribute_name: another_id
+    :attribute_type: S
+  - :attribute_name: user_email
+    :attribute_type: S
+  :table_name: some_other_table
+  :key_schema:
+  - :attribute_name: user_email
+    :key_type: HASH
+  - :attribute_name: another_id
+    :key_type: RANGE
+  :provisioned_throughput:
+    :read_capacity_units: 5
+    :write_capacity_units: 5
+- :attribute_definitions:
+  - :attribute_name: last_id
+    :attribute_type: S
+  - :attribute_name: some_other_key
+    :attribute_type: S
+  :table_name: last_table
+  :key_schema:
+  - :attribute_name: some_other_key
+    :key_type: HASH
+  - :attribute_name: last_id
+    :key_type: RANGE
+  :provisioned_throughput:
+    :read_capacity_units: 5
+    :write_capacity_units: 5
