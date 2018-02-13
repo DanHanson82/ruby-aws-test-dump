@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
-gem 'aws-sdk', '~>2'
+gem 'aws-sdk', '~>3'
+gem 'faker'
 gem 'rake'
 gem 'rspec'
 gem 'simplecov'

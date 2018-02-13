@@ -20,6 +20,8 @@ end
 
 module AwsTestDump
   require 'aws-sdk-core'
+  require 'aws-sdk-dynamodb'
+  require 'aws-sdk-s3'
   require 'fileutils'
   require 'yaml'
 
@@ -80,8 +82,9 @@ module AwsTestDump
     attr_accessor :bucket_name, :key_name
 
     def initialize(bucket_name, key_name)
-      s3_args = Hash.new
+      s3_args = {}
       s3_args[:endpoint] = ENV['FAKES3_ENDPOINT'] if ENV['FAKES3_ENDPOINT']
+      s3_args[:force_path_style] = true
       @s3_client = Aws::S3::Client.new(**s3_args)
       @bucket_name = bucket_name
       @key_name = key_name
@@ -127,8 +130,6 @@ module AwsTestDump
     end
 
     def restore
-      puts @bucket_name
-      puts @key_name
       @s3_client.create_bucket({bucket: @bucket_name})
       @s3_client.put_object({bucket: @bucket_name, key: @key_name, body: file_contents})
     end

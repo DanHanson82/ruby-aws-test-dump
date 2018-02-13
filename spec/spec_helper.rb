@@ -14,6 +14,9 @@ end
 require "aws_test_dump"
 
 
+abort("Not running tests with compose and fake aws credentials! View readme file!") if ENV['DYNAMO_ENDPOINT'].nil? && ENV['AWS_ACCESS_KEY_ID'] != 'chorizo'
+
+
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"

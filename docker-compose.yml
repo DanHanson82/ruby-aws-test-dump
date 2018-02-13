@@ -12,7 +12,7 @@ services:
       - fakes3
     environment:
       - DYNAMO_ENDPOINT=http://dynamo:5000
-      - FAKES3_ENDPOINT=http://fakes3:4000
+      - FAKES3_ENDPOINT=http://fakes3:4569
       - AWS_ACCESS_KEY_ID=potato
       - AWS_SECRET_ACCESS_KEY=chorizo
       - AWS_REGION=us-west-2
@@ -28,10 +28,9 @@ services:
       - fake-aws
 
   fakes3:
-    image: jlynn/moto_server
-    command: s3 -p4000
+    image: lphoward/fake-s3
     ports:
-      - "4000:4000"
+    - "4569:4569"
     networks:
       - fake-aws
 
