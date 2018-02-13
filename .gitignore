@@ -15,7 +15,7 @@ tags/
 tags
 coverage/
 stats/
-
+*.gem
 # rspec failure tracking
 .rspec_status
 
